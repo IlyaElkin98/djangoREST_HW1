@@ -1,6 +1,10 @@
+from django_filters import rest_framework as filters
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, viewsets
+
+from users.models import Payment
 from .models import Lesson, Course
-from .serializers import LessonSerializer, CourseSerializer
+from .serializers import LessonSerializer, CourseSerializer, PaymentSerializer
 
 
 # CRUD для модели "Course" (View-sets)
@@ -31,3 +35,26 @@ class LessonUpdateAPIView(generics.UpdateAPIView):
 
 class LessonDestroyAPIView(generics.DestroyAPIView):
     queryset = Lesson.objects.all()
+
+
+
+class CourseListView(generics.ListCreateAPIView):
+    queryset = Course.objects.all()
+    serializer_class = CourseSerializer
+
+
+class PaymentFilter(filters.FilterSet):
+    date_paid = filters.DateTimeFilter(field_name='date_paid', lookup_expr='exact')
+    course = filters.ModelChoiceFilter(queryset=Course.objects.all())
+    payment_method = filters.CharFilter(lookup_expr='icontains')
+
+    class Meta:
+        model = Payment
+        fields = ['date_paid', 'course', 'payment_method']
+
+
+class PaymentListView(generics.ListAPIView):
+    queryset = Payment.objects.all()
+    serializer_class = PaymentSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = PaymentFilter
