@@ -4,7 +4,7 @@ from rest_framework.urls import app_name
 
 from .apps import MaterialsConfig
 from .views import LessonCreateAPIView, LessonListAPIView, LessonRetrieveAPIView, LessonUpdateAPIView, \
-    LessonDestroyAPIView, CourseViewSet
+    LessonDestroyAPIView, CourseViewSet, CourseListView, PaymentListView
 
 router = DefaultRouter()
 router.register(r'courses', CourseViewSet, basename='course')
@@ -18,4 +18,7 @@ urlpatterns = [
     path('lessons/<int:pk>/', LessonRetrieveAPIView.as_view(), name='lesson-get'),
     path('lessons/update/<int:pk>/', LessonUpdateAPIView.as_view(), name='lesson-update'),
     path('lessons/delete/<int:pk>/', LessonDestroyAPIView.as_view(), name='lesson-delete'),
+
+    path('courses/', CourseListView.as_view(), name='courses-list'),
+    path('payment_list/', PaymentListView.as_view(), name='payment-list'),
 ] + router.urls
