@@ -3,8 +3,6 @@ from django.contrib.auth.models import AbstractBaseUser
 from django.utils.translation import gettext_lazy as _
 
 
-
-
 class User(AbstractBaseUser):
     email = models.EmailField(_('email address'), unique=True)
     phone = models.CharField(max_length=15, blank=True, null=True)

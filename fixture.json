@@ -22,5 +22,29 @@
             "amount": "750.00",
             "payment_method": "transfer"
         }
+    },
+        {
+        "model": "users.payment",
+        "pk": 3,
+        "fields": {
+            "user": 2,
+            "payment_date": "2022-11-15",
+            "paid_course": 2,
+            "paid_lesson": 1,
+            "amount": "1150.00",
+            "payment_method": "transfer"
+        }
+    },
+        {
+        "model": "users.payment",
+        "pk": 4,
+        "fields": {
+            "user": 1,
+            "payment_date": "2024-11-21",
+            "paid_course": 3,
+            "paid_lesson": 1,
+            "amount": "750.00",
+            "payment_method": "cash"
+        }
     }
 ]

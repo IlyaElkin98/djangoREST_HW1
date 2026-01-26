@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 import os
 from pathlib import Path
 
+from django.conf.global_settings import MEDIA_URL, MEDIA_ROOT
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -139,3 +140,7 @@ STATIC_URL = "static/"
 # }
 
 AUTH_USER_MODEL = 'users.User'
+
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')

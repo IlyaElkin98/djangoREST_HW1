@@ -4,7 +4,6 @@ from users.models import Payment
 from .models import Course, Lesson
 
 
-
 class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
@@ -18,12 +17,13 @@ class LessonSerializer(serializers.ModelSerializer):
 
 
 class CourseCountSerializer(serializers.ModelSerializer):
-    # Сериализатор выводящий количество уроков.
+    # Сериализатор курса выводящий количество уроков и информацию о них.
     lesson_count = serializers.SerializerMethodField()
+    lessons = LessonSerializer(many=True, read_only=True)
 
     class Meta:
         model = Course
-        fields = ['id', 'name', 'description', 'lesson_count']
+        fields = ['id', 'name', 'description', 'lesson_count', 'lessons']
 
     def get_lesson_count(self, obj):
         return obj.lessons.count()
