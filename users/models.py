@@ -3,14 +3,18 @@ from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 from rest_framework.permissions import BasePermission
 
+from users.managers import UserManager
+
 
 class User(AbstractUser):
     """Модель пользователь"""
-
+    username = models.CharField(max_length=40, blank=True, null=True)
     email = models.EmailField(_('email address'), unique=True)
     phone = models.CharField(max_length=15, blank=True, null=True)
     city = models.CharField(max_length=100, blank=True, null=True)
     avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
+
+    objects = UserManager()
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
