@@ -2,9 +2,10 @@ from django_filters import rest_framework as filters
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter
 from rest_framework import generics, viewsets
+from rest_framework.permissions import IsAuthenticated
 
 from users.models import Payment
-from users.permissions import Moderator
+from users.permissions import Moderator, IsOwner
 from .models import Lesson, Course
 from .serializers import LessonSerializer, CourseSerializer, PaymentSerializer, CourseCountSerializer
 
@@ -15,11 +16,21 @@ class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
 
     def get_permissions(self):
-        if self.action in ['list', 'retrieve', 'update']:
-            self.permission_classes = [Moderator]
-        elif self.action in ['create', 'destroy']:
+        """Определяем права доступа с учетом запрашиваемого действия"""
+        if self.action == 'create':
             self.permission_classes = [~Moderator]
-        return super().get_permissions()
+        elif self.action in ['list', 'retrieve', 'update']:
+            self.permission_classes = [Moderator | IsOwner]
+        elif self.action == 'destroy':
+            self.permission_classes = [IsOwner]
+        return [permission() for permission in self.permission_classes]
+
+
+    def perform_create(self, serializer):
+        """Привязываем текущего пользователя к создаваемому объекту"""
+        new_course = serializer.save()
+        new_course.owner = self.request.user
+        new_course.save()
 
 
 # CRUD для модели "Lesson" (View-sets)
@@ -28,12 +39,21 @@ class LessonViewSet(viewsets.ModelViewSet):
     queryset = Lesson.objects.all()
 
     def get_permissions(self):
-        if self.action in ['list', 'retrieve', 'update']:
-            self.permission_classes = [Moderator]
-        elif self.action in ['create', 'destroy']:
+        """Определяем права доступа с учетом запрашиваемого действия"""
+        if self.action == 'create':
             self.permission_classes = [~Moderator]
-        return super().get_permissions()
+        elif self.action in ['list', 'retrieve', 'update']:
+            self.permission_classes = [Moderator | IsOwner]
+        elif self.action == 'destroy':
+            self.permission_classes = [IsOwner]
+        return [permission() for permission in self.permission_classes]
 
+
+    def perform_create(self, serializer):
+        """Привязываем текущего пользователя к создаваемому объекту"""
+        new_lesson = serializer.save()
+        new_lesson.owner = self.request.user
+        new_lesson.save()
 
 class CourseListView(generics.ListCreateAPIView):
     queryset = Course.objects.all()
