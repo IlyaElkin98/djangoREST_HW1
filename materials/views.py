@@ -4,6 +4,7 @@ from rest_framework.filters import OrderingFilter
 from rest_framework import generics, viewsets
 
 from users.models import Payment
+from users.permissions import Moderator
 from .models import Lesson, Course
 from .serializers import LessonSerializer, CourseSerializer, PaymentSerializer, CourseCountSerializer
 
@@ -13,29 +14,25 @@ class CourseViewSet(viewsets.ModelViewSet):
     serializer_class = CourseSerializer
     queryset = Course.objects.all()
 
-
-# CRUD для модели "Lesson" (Generic-классы)
-class LessonCreateAPIView(generics.CreateAPIView):
-    serializer_class = LessonSerializer
-
-
-class LessonListAPIView(generics.ListAPIView):
-    serializer_class = LessonSerializer
-    queryset = Lesson.objects.all()
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve', 'update']:
+            self.permission_classes = [Moderator]
+        elif self.action in ['create', 'destroy']:
+            self.permission_classes = [~Moderator]
+        return super().get_permissions()
 
 
-class LessonRetrieveAPIView(generics.RetrieveAPIView):
+# CRUD для модели "Lesson" (View-sets)
+class LessonViewSet(viewsets.ModelViewSet):
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
 
-
-class LessonUpdateAPIView(generics.UpdateAPIView):
-    serializer_class = LessonSerializer
-    queryset = Lesson.objects.all()
-
-
-class LessonDestroyAPIView(generics.DestroyAPIView):
-    queryset = Lesson.objects.all()
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve', 'update']:
+            self.permission_classes = [Moderator]
+        elif self.action in ['create', 'destroy']:
+            self.permission_classes = [~Moderator]
+        return super().get_permissions()
 
 
 class CourseListView(generics.ListCreateAPIView):
