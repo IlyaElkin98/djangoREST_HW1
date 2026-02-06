@@ -8,6 +8,7 @@ class Course(models.Model):
     preview_image = models.ImageField(upload_to='materials/preview', null=True, blank=True)
     description = models.TextField()
     owner = models.ForeignKey(User, related_name='course', on_delete=models.CASCADE, null=True, blank=True)
+    video_url = models.URLField(null=True, blank=True)
 
     def __str__(self):
         return self.name
