@@ -62,6 +62,11 @@ class CourseListView(generics.ListCreateAPIView):
     queryset = Course.objects.all()
     serializer_class = CourseCountSerializer
 
+    def get(self, request, *args, **kwargs):
+        courses = Course.objects.all()
+        serializer = CourseSerializer(courses, many=True, context={'request': request})
+        return Response(serializer.data)
+
 
 class PaymentFilter(filters.FilterSet):
     date_paid = filters.DateTimeFilter(field_name='date_paid', lookup_expr='exact')
