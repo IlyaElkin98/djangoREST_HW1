@@ -1,13 +1,24 @@
 from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField
 from users.models import Payment
-from .models import Course, Lesson
+from .models import Course, Lesson, Subscription
 from materials.validators import valid_yt
 
 
 class CourseSerializer(serializers.ModelSerializer):
 
     video_url = serializers.CharField(validators=[valid_yt])
+    is_subscribed = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Course
+        fields = ['id', 'name', 'is_subscribed']
+
+    def get_is_subscribed(self, obj):
+        request = self.context.get('request')
+        if request.user.is_authenticated:
+            return Subscription.objects.filter(user=request.user, course=obj).exists()
+        return False
 
     class Meta:
         model = Course
