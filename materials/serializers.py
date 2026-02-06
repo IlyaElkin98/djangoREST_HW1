@@ -2,15 +2,22 @@ from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField
 from users.models import Payment
 from .models import Course, Lesson
+from materials.validators import valid_yt
 
 
 class CourseSerializer(serializers.ModelSerializer):
+
+    video_url = serializers.CharField(validators=[valid_yt])
+
     class Meta:
         model = Course
         fields = '__all__'
 
 
 class LessonSerializer(serializers.ModelSerializer):
+
+    video_url = serializers.CharField(validators=[valid_yt])
+
     class Meta:
         model = Lesson
         fields = ('course', 'title', 'description', 'preview_image', 'video_url',)
