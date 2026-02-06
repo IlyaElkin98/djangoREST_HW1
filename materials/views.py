@@ -10,6 +10,7 @@ from rest_framework.views import APIView
 from users.models import Payment
 from users.permissions import Moderator, IsOwner
 from .models import Lesson, Course, Subscription
+from .paginations import CustomPagination
 from .serializers import LessonSerializer, CourseSerializer, PaymentSerializer, CourseCountSerializer
 
 
@@ -17,6 +18,7 @@ from .serializers import LessonSerializer, CourseSerializer, PaymentSerializer, 
 class CourseViewSet(viewsets.ModelViewSet):
     serializer_class = CourseSerializer
     queryset = Course.objects.all()
+    pagination_class = CustomPagination
 
     def get_permissions(self):
         """Определяем права доступа с учетом запрашиваемого действия"""
@@ -40,6 +42,8 @@ class CourseViewSet(viewsets.ModelViewSet):
 class LessonViewSet(viewsets.ModelViewSet):
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
+    pagination_class = CustomPagination
+
 
     def get_permissions(self):
         """Определяем права доступа с учетом запрашиваемого действия"""
