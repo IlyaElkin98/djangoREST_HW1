@@ -31,7 +31,7 @@ class LessonSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Lesson
-        fields = ('course', 'title', 'description', 'preview_image', 'video_url',)
+        fields = ('course', 'title', 'description', 'video_url',)
 
 
 class CourseCountSerializer(serializers.ModelSerializer):

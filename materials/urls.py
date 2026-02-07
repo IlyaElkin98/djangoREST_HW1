@@ -15,5 +15,5 @@ urlpatterns = [
     path('courses_detail/', CourseListView.as_view(), name='courses-detail'),
     path('payment_list/', PaymentListView.as_view(), name='payment-list'),
     path('count/', PaymentListView.as_view(), name='count-list'),
-    path('subscribe/', SubscriptionAPIView.as_view(), name='subscription'),
+    path('subscription/', SubscriptionAPIView.as_view(), name='subscription'),
 ] + router.urls

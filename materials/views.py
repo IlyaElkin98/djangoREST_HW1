@@ -3,7 +3,7 @@ from django_filters import rest_framework as filters
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter
 from rest_framework import generics, viewsets, status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -49,7 +49,7 @@ class LessonViewSet(viewsets.ModelViewSet):
         """Определяем права доступа с учетом запрашиваемого действия"""
         if self.action == 'create':
             self.permission_classes = [~Moderator]
-        elif self.action in ['list', 'retrieve', 'update']:
+        elif self.action in ['list', 'retrieve', 'partial_update']:
             self.permission_classes = [Moderator | IsOwner]
         elif self.action == 'destroy':
             self.permission_classes = [IsOwner]
