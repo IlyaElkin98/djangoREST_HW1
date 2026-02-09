@@ -1,12 +1,16 @@
+from django.shortcuts import get_object_or_404
 from django_filters import rest_framework as filters
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter
-from rest_framework import generics, viewsets
-from rest_framework.permissions import IsAuthenticated
+from rest_framework import generics, viewsets, status
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from users.models import Payment
 from users.permissions import Moderator, IsOwner
-from .models import Lesson, Course
+from .models import Lesson, Course, Subscription
+from .paginations import CustomPagination
 from .serializers import LessonSerializer, CourseSerializer, PaymentSerializer, CourseCountSerializer
 
 
@@ -14,6 +18,7 @@ from .serializers import LessonSerializer, CourseSerializer, PaymentSerializer, 
 class CourseViewSet(viewsets.ModelViewSet):
     serializer_class = CourseSerializer
     queryset = Course.objects.all()
+    pagination_class = CustomPagination
 
     def get_permissions(self):
         """Определяем права доступа с учетом запрашиваемого действия"""
@@ -37,12 +42,14 @@ class CourseViewSet(viewsets.ModelViewSet):
 class LessonViewSet(viewsets.ModelViewSet):
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
+    pagination_class = CustomPagination
+
 
     def get_permissions(self):
         """Определяем права доступа с учетом запрашиваемого действия"""
         if self.action == 'create':
             self.permission_classes = [~Moderator]
-        elif self.action in ['list', 'retrieve', 'update']:
+        elif self.action in ['list', 'retrieve', 'partial_update']:
             self.permission_classes = [Moderator | IsOwner]
         elif self.action == 'destroy':
             self.permission_classes = [IsOwner]
@@ -58,6 +65,11 @@ class LessonViewSet(viewsets.ModelViewSet):
 class CourseListView(generics.ListCreateAPIView):
     queryset = Course.objects.all()
     serializer_class = CourseCountSerializer
+
+    def get(self, request, *args, **kwargs):
+        courses = Course.objects.all()
+        serializer = CourseSerializer(courses, many=True, context={'request': request})
+        return Response(serializer.data)
 
 
 class PaymentFilter(filters.FilterSet):
@@ -76,3 +88,27 @@ class PaymentListView(generics.ListAPIView):
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     filterset_fields = ('paid_course', 'paid_lesson', 'payment_method')
     ordering_fields = ('payment_date',)
+
+
+class SubscriptionAPIView(APIView):
+    """ Контроллер управлением подпиской"""
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        course_id = request.data.get('id')
+        course_item = get_object_or_404(Course, id=course_id)
+
+        # Проверка, существует ли подписка
+        subs_item = Subscription.objects.filter(user=user, course=course_item)
+
+        if subs_item.exists():
+            # Удаляем подписку
+            subs_item.delete()
+            message = 'Подписка удалена'
+        else:
+            # Создаем новую подписку
+            Subscription.objects.create(user=user, course=course_item)
+            message = 'Подписка добавлена'
+
+        return Response({"message": message}, status=status.HTTP_200_OK)
