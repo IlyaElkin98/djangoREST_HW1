@@ -1,7 +1,9 @@
-from rest_framework import serializers
-from .models import User
+from rest_framework.serializers import ModelSerializer
 
-class UserSerializer(serializers.ModelSerializer):
+from .models import User, Payment
+
+
+class UserSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'email', 'phone', 'city', 'avatar', 'password']
@@ -12,3 +14,9 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
+
+
+class PaymentSerializer(ModelSerializer):
+    class Meta:
+        model = Payment
+        fields = '__all__'
