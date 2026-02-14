@@ -1,7 +1,8 @@
 import stripe
+from django.core.mail import send_mail
 from django.http import JsonResponse
 
-from config.settings import STRIPE_API_KEY
+from config.settings import STRIPE_API_KEY, EMAIL_HOST_USER
 
 stripe.api_key = STRIPE_API_KEY
 
@@ -29,3 +30,16 @@ def test_session(request, session_id):
     """Просмотр сессии оплаты через идентификатор сессии"""
     session = stripe.checkout.Session.retrieve(session_id)
     return JsonResponse({"session": session})
+
+
+def send_mailing(address, subject, body):
+    """Функция отправки письма"""
+
+    response = send_mail(
+        subject=subject,
+        message=body,
+        from_email=EMAIL_HOST_USER,
+        recipient_list=address,
+        fail_silently=False,
+    )
+    return response

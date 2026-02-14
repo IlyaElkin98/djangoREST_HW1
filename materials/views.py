@@ -12,6 +12,7 @@ from users.permissions import Moderator, IsOwner
 from .models import Lesson, Course, Subscription
 from .paginations import CustomPagination
 from .serializers import LessonSerializer, CourseSerializer, PaymentSerializer, CourseCountSerializer
+from materials.tasks import mailing_about_updates
 
 
 # CRUD для модели "Course" (View-sets)
@@ -36,6 +37,10 @@ class CourseViewSet(viewsets.ModelViewSet):
         new_course = serializer.save()
         new_course.owner = self.request.user
         new_course.save()
+
+    def perform_update(self, serializer):
+        course = serializer.save()
+        mailing_about_updates.delay(course.pk)
 
 
 # CRUD для модели "Lesson" (View-sets)
