@@ -188,9 +188,3 @@ CELERY_BEAT_SCHEDULE = {
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 
-CELERY_BEAT_SCHEDULE = {
-    'deactivate-inactive-users-every-month': {
-        'task': 'your_app_name.tasks.deactivate_inactive_users',
-        'schedule': crontab(hour=0, minute=0),  # запуск каждый день в полночь
-    },
-}
