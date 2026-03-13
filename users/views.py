@@ -1,12 +1,7 @@
-import stripe
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, permissions, status
+from rest_framework import viewsets, permissions
 from rest_framework.filters import OrderingFilter
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework.views import APIView
-
-from materials.models import Course
 from .models import User, Payment
 from .serializers import UserSerializer, PaymentSerializer
 from .service import create_price, create_session
