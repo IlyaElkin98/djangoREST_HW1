@@ -8,4 +8,6 @@ COPY nginx.conf /etc/nginx/nginx.conf
 COPY html/ /usr/share/nginx/html/
 
 # Открываем порт 80 для HTTP-трафика
-EXPOSE 80
+EXPOSE 8000
+
+CMD ["sh", "-c", "python manage.py collectstatic --noinput && gunicorn config.wsgi:application --bind 0.0.0.0:8000"]
