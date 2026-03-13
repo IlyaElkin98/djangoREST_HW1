@@ -5,6 +5,7 @@ from rest_framework.test import APITestCase, APIClient
 from .models import Course, Lesson, Subscription
 from users.models import User
 
+
 class CourseTestCase(APITestCase):
     """Класс для тестирования представления курсов"""
 
@@ -15,8 +16,9 @@ class CourseTestCase(APITestCase):
 
         self.user = User.objects.create(email="admin@mail.ru",)
         self.course = Course.objects.create(name='Первый курс', description='Описание первого курса', owner=self.user)
-        self.lesson = Lesson.objects.create(title='Урок 1', description='Описание урока 1', course=self.course, video_url='youtube.com', owner=self.user)
-        self.client.force_authenticate(user=self.user) # Для авторизации пользователя
+        self.lesson = Lesson.objects.create(title='Урок 1', description='Описание урока 1',
+                                            course=self.course, video_url='youtube.com', owner=self.user)
+        self.client.force_authenticate(user=self.user)
 
     def test_lesson_retrieve(self):
         url = reverse('materials:lesson-detail', args=(self.lesson.pk,))
@@ -25,7 +27,6 @@ class CourseTestCase(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(data.get("title"), self.lesson.title)
-
 
     def test_lesson_create(self):
         url = reverse('materials:lesson-list')
@@ -39,25 +40,21 @@ class CourseTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Lesson.objects.all().count(), 2)
 
-
     def test_lesson_update(self):
         url = reverse('materials:lesson-detail', args=(self.lesson.pk,))
         data = {
             "title": "Основы Django",
-            "description": "Описание к уроку",
+            "description": "Описание к уроку"
         }
-        response = self.client.patch(url,data)
+        response = self.client.patch(url, data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(data.get("title"), "Основы Django")
-
 
     def test_lesson_destroy(self):
         url = reverse('materials:lesson-detail', args=(self.lesson.pk,))
 
         response = self.client.delete(url)
-
-
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(Lesson.objects.all().count(), 0)
 
@@ -99,7 +96,3 @@ class SubscriptionAPIViewTest(APITestCase):
         response = self.client.post(url, data)
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
-
-
-

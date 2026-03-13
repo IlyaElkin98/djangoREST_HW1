@@ -14,6 +14,7 @@ class Course(models.Model):
     def __str__(self):
         return self.name
 
+
 class Lesson(models.Model):
     course = models.ForeignKey(Course, related_name='lessons', on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
@@ -33,4 +34,3 @@ class Subscription(models.Model):
 
     def __str__(self):
         return self.title
-

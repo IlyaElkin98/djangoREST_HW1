@@ -3,8 +3,8 @@ from django.core.mail import send_mail
 from django.http import JsonResponse
 
 from config.settings import STRIPE_API_KEY, EMAIL_HOST_USER
-
 stripe.api_key = STRIPE_API_KEY
+
 
 def create_price(amount):
     """Создание цены для объекта"""

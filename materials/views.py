@@ -3,7 +3,7 @@ from django_filters import rest_framework as filters
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter
 from rest_framework import generics, viewsets, status
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -31,7 +31,6 @@ class CourseViewSet(viewsets.ModelViewSet):
             self.permission_classes = [IsOwner]
         return [permission() for permission in self.permission_classes]
 
-
     def perform_create(self, serializer):
         """Привязываем текущего пользователя к создаваемому объекту"""
         new_course = serializer.save()
@@ -49,7 +48,6 @@ class LessonViewSet(viewsets.ModelViewSet):
     queryset = Lesson.objects.all()
     pagination_class = CustomPagination
 
-
     def get_permissions(self):
         """Определяем права доступа с учетом запрашиваемого действия"""
         if self.action == 'create':
@@ -60,12 +58,12 @@ class LessonViewSet(viewsets.ModelViewSet):
             self.permission_classes = [IsOwner]
         return [permission() for permission in self.permission_classes]
 
-
     def perform_create(self, serializer):
         """Привязываем текущего пользователя к создаваемому объекту"""
         new_lesson = serializer.save()
         new_lesson.owner = self.request.user
         new_lesson.save()
+
 
 class CourseListView(generics.ListCreateAPIView):
     queryset = Course.objects.all()
